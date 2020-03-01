@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
 using SSOauth.Models;
 using SSOauth.Services;
 using SSOauth.Data;
 using System.ComponentModel;
+using System.Text;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -47,12 +47,12 @@ namespace SSOauth.Controllers
         // POST api/<controller>
         [HttpPost]
         [Route("Register")]
-        public async Task<Object> CreateUser(User model)
+        public void CreateUser(User model)
         {
             string pepper = Service.RandomString(10);
             pepper = Service.sha256_hash(pepper);
-            string signature = model.login + pepper + model.claim + Service.sha256_hash(model.password);
-            signature = ByteConverter.GetBytes(signature);
+            string sign = model.login + pepper + model.claim + Service.sha256_hash(model.password);
+            byte[] signature = Encoding.ASCII.GetBytes(sign);  
             var user = new User()
             {
                 login = model.login,
@@ -62,7 +62,7 @@ namespace SSOauth.Controllers
                 claim = model.claim,
                 signature = Service.rsa_hash(signature, RSA.ExportParameters(false), false)
             };
-           var result =  await User.CreateAsync(user, Service.sha256_hash(model.password));
+          // var result =  await User.CreateAsync(user, Service.sha256_hash(model.password));
             
         }
 
