@@ -7,8 +7,6 @@ import { RouterModule } from '@angular/router';
 import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
-import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
 
@@ -17,8 +15,6 @@ import { LoginComponent } from './login/login.component';
     AppComponent,
     NavMenuComponent,
     HomeComponent,
-    CounterComponent,
-    FetchDataComponent,
     RegisterComponent,
     LoginComponent
   ],
@@ -28,8 +24,6 @@ import { LoginComponent } from './login/login.component';
     FormsModule,
     RouterModule.forRoot([
       { path: '', component: LoginComponent, pathMatch: 'full' },
-      { path: 'counter', component: CounterComponent },
-        { path: 'fetch-data', component: FetchDataComponent },
         {path: 'register', component: RegisterComponent},
         { path: 'login', component: LoginComponent},
     ])
