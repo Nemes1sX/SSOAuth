@@ -11,6 +11,8 @@ namespace SSOauth.Data
 {
     public class SSOAuthContext : DbContext
     {
+      
+
         public SSOAuthContext(DbContextOptions<SSOAuthContext> options) : base(options)
         { }
         public DbSet<User> Users { get; set; }

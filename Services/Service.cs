@@ -18,7 +18,7 @@ namespace SSOauth.Services
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[random.Next(s.Length)]).ToArray());
         }
-        public static string  sha256_hash(string val) 
+        public static string sha256_hash(string val)
         {
             StringBuilder sb = new StringBuilder();
             using (var hash = SHA256.Create())
@@ -32,22 +32,35 @@ namespace SSOauth.Services
 
             return sb.ToString();
         }
-        public static byte[] rsa_hash(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
+        /* public static byte[] rsa_hash(byte[] Data, RSAParameters RSAKey, bool DoOAEPPadding)
+         {
+             try
+             {
+                 byte[] encryptedData;
+                 using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
+                 {
+                     RSA.ImportParameters(RSAKey);
+                     encryptedData = RSA.Encrypt(Data, DoOAEPPadding);
+                 }
+                 return encryptedData;
+             }
+             catch (CryptographicException e)
+             {
+                 throw e;
+             }
+         }*/
+        public static string rsa_hash(string sign)
         {
-            try
-            {
-                byte[] encryptedData;
-                using (RSACryptoServiceProvider RSA = new RSACryptoServiceProvider())
-                {
-                    RSA.ImportParameters(RSAKey);
-                    encryptedData = RSA.Encrypt(Data, DoOAEPPadding);
-                }
-                return encryptedData;
-            }
-            catch (CryptographicException e)
-            {
-                throw e;
-            }
+            RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+            // Read public key in a string  
+            sign = RSA.ToXmlString(true);
+            Console.WriteLine(sign);
+            // Get key into parameters  
+            RSAParameters RSAKeyInfo = RSA.ExportParameters(true);
+
+            string privatekey = Encoding.UTF8.GetString(RSAKeyInfo.D);
+            System.IO.File.WriteAllText(@"C:\Users\Boss\Documents\SSOauth\SSOauth\SSOauth\privatekeys.txt", privatekey);
+            return Encoding.UTF8.GetString(RSAKeyInfo.Modulus) + Encoding.UTF8.GetString(RSAKeyInfo.Exponent);
         }
     }
 }

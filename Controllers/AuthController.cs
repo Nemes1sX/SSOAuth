@@ -4,9 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
+using Microsoft.EntityFrameworkCore;
 using SSOauth.Models;
 using SSOauth.Services;
+using SSOauth.Interfaces;
 using SSOauth.Data;
 using System.ComponentModel;
 using System.Text;
@@ -21,14 +22,15 @@ namespace SSOauth.Controllers
         private User _user;
         private Login _credentials;
         private readonly ApplicationSettings _appSettings;
-        private SSOAuthContext _db;
+        private readonly IUser db;
 
-        public AuthController(IOptions<ApplicationSettings> appSettings, User user, Login credentials, SSOAuthContext db)
+
+        public AuthController(IOptions<ApplicationSettings> appSettings, User user, Login credentials, IUser _db)
          {
-            _user = user;
+            db = _db;
+            //_user = user;
             _credentials = credentials;
              _appSettings = appSettings.Value;
-            _db = db;
         }
         // GET: api/<controller>
         [HttpGet]
@@ -47,23 +49,21 @@ namespace SSOauth.Controllers
         // POST api/<controller>
         [HttpPost]
         [Route("Register")]
-        public void CreateUser(User model)
+        public int CreateUser([FromBody] User model)
         {
             string pepper = Service.RandomString(10);
             pepper = Service.sha256_hash(pepper);
             string sign = model.login + pepper + model.claim + Service.sha256_hash(model.password);
-            byte[] signature = Encoding.ASCII.GetBytes(sign);  
             var user = new User()
             {
                 login = model.login,
-                created_at = DateTime.UtcNow.AddHours(2),
                 password = Service.sha256_hash(model.password),
-                
                 claim = model.claim,
-                signature = Service.rsa_hash(signature, RSA.ExportParameters(false), false)
+                created_at = DateTime.UtcNow.AddHours(2),
+                pepper = Service.sha256_hash(pepper),
+                signature = Service.rsa_hash(sign)    
             };
-          // var result =  await User.CreateAsync(user, Service.sha256_hash(model.password));
-            
+            return db.Register(user);
         }
 
         // PUT api/<controller>/5

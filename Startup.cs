@@ -7,9 +7,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using SSOauth.Data;
 using System.Text;
-//using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
-
-
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using SSOauth.Controllers;
+using SSOauth.Interfaces;
 
 namespace SSOauth
 {
@@ -25,6 +25,7 @@ namespace SSOauth
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IUser, UserDataLayer>();
             services.AddControllersWithViews();
             // In production, the Angular files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -41,7 +42,7 @@ namespace SSOauth
                AddNewtonsoftJson(x =>
                {
                    x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
-                   x.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc2;
+                   x.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
                    x.SerializerSettings.DateFormatString = "yyyy'-'MM'-'dd'T'HH':'mm";
                });
         }
